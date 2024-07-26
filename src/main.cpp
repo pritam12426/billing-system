@@ -227,16 +227,34 @@ void Shopping::edit(void) {
 
 
 void Shopping::remove() {
-  ;
-  ;
+  list();
+  std::clog << "Enter the product code code: ";
+  std::cin >> choice;
+  std::string sql_query =
+      std::format("DELETE FROM \"Shop\" WHERE \"Shop Product Code\" = {};", choice);
+  std::cout << sql_query << '\n';
+  // exit(0);
+  db_return_code =
+      sqlite3_exec(db, sql_query.c_str(), callback, 0, &db_error_message);
+  if (db_return_code != SQLITE_OK) {
+    std::cerr << "SQL error: while deleting from table 'Shop' in data base ( "
+              << db_error_message << " )\n";
+    sqlite3_free(db_error_message);
+    db_error_message = nullptr;
+    exit(1);
+  }
 }
 
 
 void Shopping::list(void) {
-  std::cout << "\n\n|--------------------------------------------------------"
-               "---|\n";
-  std::cout << "Product Code \t\t Name \t\t Price \n";
-  // TODO: list whole data base with while loop
+  sql_query      = "SELECT * from 'Shop'";
+  db_return_code = sqlite3_exec(db, sql_query, callback, 0, &db_error_message);
+
+  if (db_return_code != SQLITE_OK) {
+    fprintf(stderr, "SQL error: %s\n", db_error_message);
+    sqlite3_free(db_error_message);
+    db_error_message = nullptr;
+  }
 }
 
 
@@ -247,6 +265,6 @@ void Shopping::receipt() {
 
 int main(void) {
   Shopping shop;
-  shop.menu();
+  shop.administrator();
   return 0;
 }

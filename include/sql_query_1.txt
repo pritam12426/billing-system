@@ -1,4 +1,4 @@
-"CREATE TABLE \"Shop\" (" \
+"CREATE TABLE IF NOT EXISTS \"Shop\" (" \
 "	\"Shop Product Code\" INTEGER NOT NULL DEFAULT 0 UNIQUE," \
 "	\"Shop Product Name\" REAL NOT NULL," \
 "	\"Shop Product Price\" REAL NOT NULL DEFAULT 0," \

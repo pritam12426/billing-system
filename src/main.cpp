@@ -4,20 +4,21 @@
 #include <iostream>
 #include <string>
 
-static short int choice;
 
 class Shopping {
  private:
   char *db_error_message = nullptr;
   sqlite3 *db { nullptr };
 
-  int product_code { 0 };
-  float price { 0 };
-  int db_return_code { 0 };
-  float discount { 0 };
-  size_t max_product_name_len {};
-  std::string product_name {};
-  char *sql_query = nullptr;
+  int product_code            = 0;
+  short int choice            = 0;
+  float price                 = 0;
+  int db_return_code          = 0;
+  float discount              = 0;
+  size_t max_product_name_len = 0;
+  std::string product_name    = "";
+  char *sql_query             = nullptr;
+  sqlite3_stmt *stmt          = nullptr;
 
  public:
   void menu(void);
@@ -37,15 +38,16 @@ class Shopping {
     if (db_return_code) {
       std::cerr << "Creating new data base file: " << sqlite3_errmsg(db)
                 << '\n';
-      create_database();
       add();
     }
+    create_database();
   }
   ~Shopping() {
     sqlite3_close(db);
     ;
   }
 };
+
 
 int Shopping::callback(void *NotUsed, int argc, char **argv, char **azColName) {
   int i;
@@ -57,12 +59,13 @@ int Shopping::callback(void *NotUsed, int argc, char **argv, char **azColName) {
 }
 
 
+/*Creat database is done*/
 void Shopping::create_database(void) {
   sql_query = {
 #include "../include/sql_query_1.txt"
   };
 
-  db_return_code = sqlite3_exec(db, sql_query, callback, 0, &db_error_message);
+  db_return_code = sqlite3_exec(db, sql_query, NULL, 0, &db_error_message);
   if (db_return_code != SQLITE_OK) {
     std::cerr << "SQL error: while creating table 'Sh>>>sop' in data base ( "
               << db_error_message << " )\n";
@@ -75,7 +78,7 @@ void Shopping::create_database(void) {
 #include "../include/sql_query_2.txt"
   };
 
-  db_return_code = sqlite3_exec(db, sql_query, callback, 0, &db_error_message);
+  db_return_code = sqlite3_exec(db, sql_query, NULL, 0, &db_error_message);
   if (db_return_code != SQLITE_OK) {
     std::cerr << "SQL error: while creat table 'Key value' ( "
               << db_error_message << " )\n";
@@ -86,6 +89,7 @@ void Shopping::create_database(void) {
 }
 
 
+/*menu database is done*/
 void Shopping::menu(void) {
   std::string email {};
   int password { 0 };
@@ -129,7 +133,7 @@ user:
   goto user;
 }
 
-
+/* administrator is done */
 void Shopping::administrator(void) {
   const char *mess2 = {
 #include "../include/mess2.txt"
@@ -176,13 +180,14 @@ void Shopping::buyer(void) {
 }
 
 
+/* add is done */
 void Shopping::add(void) {
 user:
   std::clog << "Add new product\n";
   std::clog << "\tProduct code of the product ";
   std::cin >> product_code;
   std::clog << "\tName of the product ";
-  std::getline(std::cin, product_name);
+  std::cin >> product_name;
   std::clog << "\tPrice of the product: ";
   std::cin >> price;
   std::clog << "\tDiscount on product: ";
@@ -220,14 +225,16 @@ void Shopping::edit(void) {
   ;
 }
 
+
 void Shopping::remove() {
   ;
   ;
 }
 
+
 void Shopping::list(void) {
-  std::cout
-      << "\n\n|-----------------------------------------------------------|\n";
+  std::cout << "\n\n|--------------------------------------------------------"
+               "---|\n";
   std::cout << "Product Code \t\t Name \t\t Price \n";
   // TODO: list whole data base with while loop
 }

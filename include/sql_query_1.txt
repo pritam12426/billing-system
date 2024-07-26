@@ -1,0 +1,6 @@
+"CREATE TABLE \"Shop\" (" \
+"	\"Shop Product Code\" INTEGER NOT NULL DEFAULT 0 UNIQUE," \
+"	\"Shop Product Name\" REAL NOT NULL COLLATE UTF16," \
+"	\"Shop Product Price\" REAL NOT NULL DEFAULT 0," \
+"	\"Shop Product Discount\" REAL NOT NULL DEFAULT 0.0" \
+");"

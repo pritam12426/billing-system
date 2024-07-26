@@ -1,0 +1,7 @@
+"|-----------------------|\n"
+"|   Administrator menu  |\n"
+"|-----------------------|\n"
+"| 1) Add the product    |\n"
+"| 3) Delete the product |\n"
+"| 4) Back to main menu  |\n"
+"|-----------------------|\n"

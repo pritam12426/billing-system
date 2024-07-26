@@ -1,5 +1,6 @@
 #include <sqlite3.h>
 
+#include <format>
 #include <iostream>
 #include <string>
 
@@ -15,7 +16,7 @@ class Shopping {
   int db_return_code { 0 };
   float discount { 0 };
   size_t max_product_name_len {};
-  std::string pname {};
+  std::string product_name {};
   char *sql_query = nullptr;
 
  public:
@@ -32,9 +33,10 @@ class Shopping {
 
  public:
   Shopping() {
-    db_return_code = sqlite3_open("./shop_data_base.db", &db);
-    if (db_return_code == true) {
-      std::cerr << "Can't open database: " << sqlite3_errmsg(db);
+    db_return_code = sqlite3_open("data_base.db", &db);
+    if (db_return_code) {
+      std::cerr << "Creating new data base file: " << sqlite3_errmsg(db)
+                << '\n';
       create_database();
       add();
     }
@@ -62,7 +64,7 @@ void Shopping::create_database(void) {
 
   db_return_code = sqlite3_exec(db, sql_query, callback, 0, &db_error_message);
   if (db_return_code != SQLITE_OK) {
-    std::cerr << "SQL error: while creating table 'Shop' in data base ( "
+    std::cerr << "SQL error: while creating table 'Sh>>>sop' in data base ( "
               << db_error_message << " )\n";
     sqlite3_free(db_error_message);
     db_error_message = nullptr;
@@ -175,26 +177,42 @@ void Shopping::buyer(void) {
 
 
 void Shopping::add(void) {
-  // fstream data;
-  // TODO: database
-  int c;
-  int token { 0 };
-  float price { 0 };
-  float d { 0 };
-  std::string product_name;
-
+user:
   std::clog << "Add new product\n";
   std::clog << "\tProduct code of the product ";
   std::cin >> product_code;
   std::clog << "\tName of the product ";
-  std::cin >> pname;
+  std::getline(std::cin, product_name);
   std::clog << "\tPrice of the product: ";
   std::cin >> price;
   std::clog << "\tDiscount on product: ";
   std::cin >> discount;
 
-  // data.open("database.txt", ios::in);
-  // TODO: Do some add item to data base
+  std::string sql_query(
+      "INSERT INTO 'Shop' ('Shop Product Code', 'Shop Product Name', 'Shop "
+      "Product Price', 'Shop Product Discount') ");
+  sql_query += std::format("VALUES ({}, '{}', {}, {}); ", product_code,
+                           product_name, price, discount);
+
+  db_return_code =
+      sqlite3_exec(db, sql_query.c_str(), callback, 0, &db_error_message);
+  if (db_return_code == 19) {
+    std::cerr << "\nProduct code should be unique the ( " << product_code
+              << " ) already exist\n\a";
+    goto user;
+  }
+
+  if (db_return_code != SQLITE_OK) {
+    std::cerr << "SQL error: while creating table 'Shop' in data base ( "
+              << db_error_message << " )\n";
+    sqlite3_free(db_error_message);
+    db_error_message = nullptr;
+    exit(1);
+  }
+
+  if (max_product_name_len > product_name.length()) {
+    max_product_name_len = product_name.length();
+  }
 }
 
 
